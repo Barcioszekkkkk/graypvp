@@ -36,67 +36,89 @@ document.querySelectorAll('[data-link]').forEach(a => {
 });
 
 
+
 (() => {
-    const IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/8/85/Budowa_penisa.jpg?utm_source=pl.wikipedia.org&utm_campaign=index&utm_content=original";
+    const IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/8/85/Budowa_penisa.jpg";
 
-    const personCard = [...document.querySelectorAll(".person")]
-        .find(card => 
-            card.querySelector("h3")?.textContent.trim() === "LucznioreQ"
-        );
+    function initLucznioreqEgg() {
+        const card = [...document.querySelectorAll(".person")]
+            .find(el => 
+                el.querySelector("h3")?.textContent.trim() === "LucznioreQ"
+            );
 
-    if (!personCard) return;
+        if (!card) return;
 
-    let clicks = 0;
-    let clickTimer;
+        let clicks = 0;
+        let clickTimer = null;
+        let hideTimer = null;
 
-    const overlay = document.createElement("div");
-    overlay.style.cssText = `
-        position: fixed;
-        inset: 0;
-        width: 100vw;
-        height: 100vh;
-        background: #000;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 999999;
-    `;
+        const overlay = document.createElement("div");
 
-    const image = document.createElement("img");
-    image.src = IMAGE_URL;
-    image.style.cssText = `
-        max-width: 100%;
-        max-height: 100%;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    `;
+        Object.assign(overlay.style, {
+            position: "fixed",
+            inset: "0",
+            width: "100%",
+            height: "100vh",
+            height: "100dvh",
+            background: "#000",
+            display: "none",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "2147483647"
+        });
 
-    overlay.appendChild(image);
-    document.body.appendChild(overlay);
+        const img = document.createElement("img");
+        img.src = IMAGE_URL;
+        img.alt = "Easter egg";
 
-    let hideTimer;
+        Object.assign(img.style, {
+            width: "100%",
+            height: "100%",
+            objectFit: "contain"
+        });
 
-    personCard.addEventListener("click", () => {
-        clicks++;
+        overlay.appendChild(img);
+        document.body.appendChild(overlay);
 
-        clearTimeout(clickTimer);
-
-        if (clicks >= 3) {
-            clicks = 0;
-
+        function showImage() {
             clearTimeout(hideTimer);
-
             overlay.style.display = "flex";
 
             hideTimer = setTimeout(() => {
                 overlay.style.display = "none";
             }, 4000);
-
-        } else {
-            clickTimer = setTimeout(() => {
-                clicks = 0;
-            }, 800);
         }
-    });
+
+        card.style.touchAction = "manipulation";
+
+        card.addEventListener("pointerup", (event) => {
+            if (!event.isPrimary || event.button !== 0) return;
+
+            clicks++;
+
+            clearTimeout(clickTimer);
+
+            if (clicks >= 3) {
+                clicks = 0;
+                showImage();
+            } else {
+                clickTimer = setTimeout(() => {
+                    clicks = 0;
+                }, 1200);
+            }
+        });
+
+        // Zamknięcie po kliknięciu w ekran
+        overlay.addEventListener("pointerup", () => {
+            clearTimeout(hideTimer);
+            overlay.style.display = "none";
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initLucznioreqEgg);
+    } else {
+        initLucznioreqEgg();
+    }
 })();
+
