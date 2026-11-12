@@ -34,3 +34,69 @@ document.querySelectorAll('[data-link]').forEach(a => {
         a.rel = 'noopener noreferrer';
     }
 });
+
+
+(() => {
+    const IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/8/85/Budowa_penisa.jpg?utm_source=pl.wikipedia.org&utm_campaign=index&utm_content=original";
+
+    const personCard = [...document.querySelectorAll(".person")]
+        .find(card => 
+            card.querySelector("h3")?.textContent.trim() === "LucznioreQ"
+        );
+
+    if (!personCard) return;
+
+    let clicks = 0;
+    let clickTimer;
+
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+    `;
+
+    const image = document.createElement("img");
+    image.src = IMAGE_URL;
+    image.style.cssText = `
+        max-width: 100%;
+        max-height: 100%;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    `;
+
+    overlay.appendChild(image);
+    document.body.appendChild(overlay);
+
+    let hideTimer;
+
+    personCard.addEventListener("click", () => {
+        clicks++;
+
+        clearTimeout(clickTimer);
+
+        if (clicks >= 3) {
+            clicks = 0;
+
+            clearTimeout(hideTimer);
+
+            overlay.style.display = "flex";
+
+            hideTimer = setTimeout(() => {
+                overlay.style.display = "none";
+            }, 4000);
+
+        } else {
+            clickTimer = setTimeout(() => {
+                clicks = 0;
+            }, 800);
+        }
+    });
+})();
